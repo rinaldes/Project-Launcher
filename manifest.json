@@ -1,0 +1,33 @@
+{
+  "required_api_version": "2",
+  "name": "Project Launcher",
+  "description": "Quickly locate and open local projects with your preferred editor",
+  "developer_name": "Rinaldes Duma",
+  "icon": "images/icon.png",
+  "options": {
+    "query_debounce": 0.3
+  },
+  "preferences": [
+    {
+      "id": "trigger",
+      "type": "keyword",
+      "name": "Trigger",
+      "description": "Type this keyword to list all projects in the specified folder, and open them with your editor",
+      "default_value": "code"
+    },
+    {
+      "id": "editor",
+      "type": "text",
+      "name": "Editor command",
+      "description": "Specify the command to open projects (e.g., 'code' for VS Code, 'cursor' for Cursor editor, 'subl' for sublime, and other code editor)",
+      "default_value": "code"
+    },
+    {
+      "id": "folder",
+      "type": "text",
+      "name": "Target folder",
+      "description": "Folder to search for projects (e.g., '~/Project' or '/path/to/folder')",
+      "default_value": "~/Project"
+    }
+  ]
+}

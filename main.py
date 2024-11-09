@@ -14,9 +14,7 @@ class Launcher(Extension):
 
 class ProjectFinder(EventListener):
   def on_event(self, event, ext):
-    editor = ext.preferences["editor"]
-    folder = ext.preferences["folder"]
-    cmd = f"find {folder} -type d -name .git -prune -exec dirname {{}} \; | rev | cut -d'/' -f1 | rev"
+    cmd = f"find {ext.preferences["folder"]} -type d -name .git -prune -exec dirname {{}} \;"
 
     if event.get_argument():
       cmd += f" | grep {event.get_argument()}"
@@ -29,9 +27,9 @@ class ProjectFinder(EventListener):
     items = [
       ExtensionResultItem(
         icon='images/icon.png',
-        name=project,
-        description=f'{editor} {project}',
-        on_enter=RunScriptAction(f"{editor} {folder}/{project}")
+        name=project.split('/')[-1],
+        description=project,
+        on_enter=RunScriptAction(f"{ext.preferences["editor"]} {project}")
       ) for project in projects
     ]
 

@@ -6,6 +6,7 @@ from ulauncher.api.shared.action.RenderResultListAction import RenderResultListA
 from ulauncher.api.shared.action.RunScriptAction import RunScriptAction
 from ulauncher.api.shared.action.HideWindowAction import HideWindowAction
 import subprocess
+import time
 
 class Launcher(Extension):
   def __init__(self):
@@ -13,23 +14,55 @@ class Launcher(Extension):
     self.subscribe(KeywordQueryEvent, ProjectFinder())
 
 class ProjectFinder(EventListener):
-  def on_event(self, event, ext):
-    cmd = f"find {ext.preferences["folder"]} -type d -name .git -prune -exec dirname {{}} \;"
+  def __init__(self):
+    self._last_search_time = 0
+    self._debounce_delay = 0.4
+    self._last_results = []
+    self._cached_projects = []
+    self._last_cache_time = 0
+    self._cache_duration = 30  
 
-    if event.get_argument():
-      cmd += f" | grep {event.get_argument()}"
-
+  def _get_projects(self, folder):
+    current_time = time.time()
+    
+    if current_time - self._last_cache_time < self._cache_duration:
+      return self._cached_projects
+      
     try:
-      projects = subprocess.check_output(cmd, shell=True, text=True).splitlines()[:10]
+      cmd = f"fd -H '^.git$' -t d -d 4 {folder} --exec dirname"
+      self._cached_projects = subprocess.check_output(cmd, shell=True, text=True).splitlines()
     except subprocess.CalledProcessError:
-      projects = []
+      cmd = f"find {folder} -maxdepth 4 -type d -name .git -prune -exec dirname {{}} \;"
+      try:
+        self._cached_projects = subprocess.check_output(cmd, shell=True, text=True).splitlines()
+      except subprocess.CalledProcessError:
+        self._cached_projects = []
+    
+    self._last_cache_time = current_time
+    return self._cached_projects
+
+  def on_event(self, event, ext):
+    current_time = time.time()
+    
+    if current_time - self._last_search_time < self._debounce_delay:
+      return RenderResultListAction(self._last_results)
+    
+    self._last_search_time = current_time
+    projects = self._get_projects(ext.preferences["folder"])
+    
+    search_term = event.get_argument()
+    if search_term:
+      search_term = search_term.lower()
+      projects = [p for p in projects if search_term in p.lower()][:10]
+    else:
+      projects = projects[:10]
 
     items = [
       ExtensionResultItem(
         icon='images/icon.png',
         name=project.split('/')[-1],
         description=project,
-        on_enter=RunScriptAction(f"{ext.preferences["editor"]} {project}")
+        on_enter=RunScriptAction(f"{ext.preferences['editor']} {project}")
       ) for project in projects
     ]
 
@@ -41,6 +74,7 @@ class ProjectFinder(EventListener):
         on_enter=HideWindowAction()
       ))
 
+    self._last_results = items
     return RenderResultListAction(items)
 
 if __name__ == '__main__':

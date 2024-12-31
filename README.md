@@ -42,7 +42,7 @@ A Ulauncher extension that helps you quickly find and open your Git projects. It
 3. Click "Add extension"
 4. Paste the following URL:
    ```
-   https://github.com/your-username/project-launcher
+   https://github.com/rinaldes/Project-Launcher
    ```
 
 ## Configuration
@@ -57,7 +57,7 @@ The extension has two preferences that need to be set:
 ## Usage
 
 1. Open Ulauncher
-2. Type your keyword (default: `p`) followed by a space
+2. Type your keyword (default: `code`) followed by a space
 3. Start typing the project name
 4. Select a project and press Enter to open it in your configured editor
 

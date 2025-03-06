@@ -56,6 +56,8 @@ The extension has several customizable preferences:
 1. `folder`: The root directory to search for Git projects (e.g., `~/Projects`)
 2. `editor`: Your preferred editor command (e.g., `code`, `cursor`, `windsurf`, `pearai`, `subl`)
 
+![Configuration](images/config2.png)
+
 ### Advanced Settings
 3. `search_depth`: Maximum directory depth to search for Git repositories (default: `4`)
 4. `cache_duration`: How long to cache search results in seconds (default: `30`)

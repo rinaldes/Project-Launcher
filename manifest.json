@@ -28,6 +28,20 @@
       "name": "Target folder",
       "description": "Folder to search for projects (e.g., '~/Project' or '/path/to/folder')",
       "default_value": "~/Project"
+    },
+    {
+      "id": "search_depth",
+      "type": "text",
+      "name": "Search Depth",
+      "description": "Maximum depth to search for projects (e.g., '4' means search up to 4 levels deep)",
+      "default_value": "4"
+    },
+    {
+      "id": "cache_duration",
+      "type": "text",
+      "name": "Cache Duration",
+      "description": "How long to cache search results in seconds",
+      "default_value": "30"
     }
   ]
 }

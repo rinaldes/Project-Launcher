@@ -6,12 +6,13 @@ A Ulauncher extension that helps you quickly find and open your Git projects. It
 
 ## Features
 
-- Fast project search with debouncing (400ms)
+- Fast project search with customizable debouncing
 - Case-insensitive search
-- Project caching for better performance (30s cache)
+- Project caching with customizable duration
 - Support for both `fd` and `find` commands
-- Maximum search depth of 4 directories to keep things fast
-- Shows up to 10 matching results
+- Customizable search depth for finding repositories
+- Configurable number of results to display
+- Fully customizable through Ulauncher preferences
 
 ## Dependencies
 
@@ -47,12 +48,19 @@ A Ulauncher extension that helps you quickly find and open your Git projects. It
 
 ## Configuration
 
-The extension has two preferences that need to be set:
+The extension has several customizable preferences:
 
 ![Configuration](images/config.png)
 
+### Basic Settings
 1. `folder`: The root directory to search for Git projects (e.g., `~/Projects`)
 2. `editor`: Your preferred editor command (e.g., `code`, `cursor`, `windsurf`, `pearai`, `subl`)
+
+### Advanced Settings
+3. `search_depth`: Maximum directory depth to search for Git repositories (default: `4`)
+4. `cache_duration`: How long to cache search results in seconds (default: `30`)
+5. `max_results`: Maximum number of results to display (default: `10`)
+6. `debounce_delay`: Delay in seconds before searching after typing stops (default: `0.4`)
 
 ## Usage
 
@@ -63,22 +71,30 @@ The extension has two preferences that need to be set:
 
 ## Performance Notes
 
-- The extension uses caching (30 seconds) to avoid excessive filesystem searches
-- Debouncing (400ms) is implemented to prevent too many searches while typing
+- The extension uses caching (customizable, default 30 seconds) to avoid excessive filesystem searches
+- Debouncing (customizable, default 400ms) is implemented to prevent too many searches while typing
 - If `fd` is not available, it falls back to the standard `find` command
-- Search depth is limited to 4 levels for better performance
+- Search depth is customizable (default 4 levels) for better performance
+- You can adjust the cache duration and search depth based on your system's performance
+
+## Customization Tips
+
+- **Large Project Collections**: Increase `cache_duration` to reduce filesystem operations
+- **Deep Project Structures**: Increase `search_depth` if your projects are nested deeply
+- **Slow Systems**: Increase `debounce_delay` to reduce search frequency while typing
+- **Many Projects**: Adjust `max_results` to show more or fewer projects in the results
 
 ## Troubleshooting
 
 1. **Slow Search**: 
    - Install `fd-find` for better performance
-   - Check if your project root directory isn't too deep
-   - Verify you don't have too many nested Git repositories
+   - Reduce `search_depth` if you have many directories
+   - Increase `cache_duration` to reduce filesystem operations
 
 2. **Projects Not Found**:
    - Make sure the project directory is set correctly in preferences
    - Verify that the projects have `.git` directories
-   - Check if the projects are within 4 levels of your root directory
+   - Increase `search_depth` if your projects are nested deeply
 
 3. **Editor Not Opening**:
    - Verify that your editor command is in your system PATH

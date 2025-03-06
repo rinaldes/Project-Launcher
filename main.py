@@ -16,23 +16,26 @@ class Launcher(Extension):
 class ProjectFinder(EventListener):
   def __init__(self):
     self._last_search_time = 0
-    self._debounce_delay = 0.4
     self._last_results = []
     self._cached_projects = []
     self._last_cache_time = 0
-    self._cache_duration = 30  
 
-  def _get_projects(self, folder):
+  def _get_projects(self, ext):
     current_time = time.time()
     
-    if current_time - self._last_cache_time < self._cache_duration:
+    # Get customizable preferences with fallbacks
+    cache_duration = int(ext.preferences.get("cache_duration", "30"))
+    search_depth = int(ext.preferences.get("search_depth", "4"))
+    folder = ext.preferences["folder"]
+    
+    if current_time - self._last_cache_time < cache_duration:
       return self._cached_projects
       
     try:
-      cmd = f"fd -H '^.git$' -t d -d 4 {folder} --exec dirname"
+      cmd = f"fd -H '^.git$' -t d -d {search_depth} {folder} --exec dirname"
       self._cached_projects = subprocess.check_output(cmd, shell=True, text=True).splitlines()
     except subprocess.CalledProcessError:
-      cmd = f"find {folder} -maxdepth 4 -type d -name .git -prune -exec dirname {{}} \;"
+      cmd = f"find {folder} -maxdepth {search_depth} -type d -name .git -prune -exec dirname {{}} \;"
       try:
         self._cached_projects = subprocess.check_output(cmd, shell=True, text=True).splitlines()
       except subprocess.CalledProcessError:
@@ -44,18 +47,22 @@ class ProjectFinder(EventListener):
   def on_event(self, event, ext):
     current_time = time.time()
     
-    if current_time - self._last_search_time < self._debounce_delay:
+    # Get customizable preferences with fallbacks
+    debounce_delay = float(ext.preferences.get("debounce_delay", "0.4"))
+    max_results = int(ext.preferences.get("max_results", "10"))
+    
+    if current_time - self._last_search_time < debounce_delay:
       return RenderResultListAction(self._last_results)
     
     self._last_search_time = current_time
-    projects = self._get_projects(ext.preferences["folder"])
+    projects = self._get_projects(ext)
     
     search_term = event.get_argument()
     if search_term:
       search_term = search_term.lower()
-      projects = [p for p in projects if search_term in p.lower()][:10]
+      projects = [p for p in projects if search_term in p.lower()][:max_results]
     else:
-      projects = projects[:10]
+      projects = projects[:max_results]
 
     items = [
       ExtensionResultItem(

@@ -42,6 +42,20 @@
       "name": "Cache Duration",
       "description": "How long to cache search results in seconds",
       "default_value": "30"
+    },
+    {
+      "id": "max_results",
+      "type": "text",
+      "name": "Maximum Results",
+      "description": "Maximum number of results to display",
+      "default_value": "10"
+    },
+    {
+      "id": "debounce_delay",
+      "type": "text",
+      "name": "Debounce Delay",
+      "description": "Delay in seconds before searching after typing stops",
+      "default_value": "0.4"
     }
   ]
 }
